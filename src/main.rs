@@ -188,7 +188,7 @@ impl ProxyHttp for ReverseProxy {
 
         session
             .req_header_mut()
-            .insert_header("X-Proxy", "Pingora-POW")
+            .insert_header("X-Proxy", "Pingora-Response")
             .unwrap();
 
         Ok(false)
