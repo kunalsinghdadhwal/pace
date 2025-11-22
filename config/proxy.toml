@@ -1,0 +1,15 @@
+[server]
+listen = "0.0.0.0:8080"
+workers = 4
+
+[upstreams]
+backends = ["http://127.0.0.1:8000", "http://127.0.0.1:8001"]
+
+[rate_limit]
+max_requests = 100
+window_seconds = 60
+key_extractor = "client_ip"
+
+[metrics]
+enabled = true
+endpoint = "/metrics"
