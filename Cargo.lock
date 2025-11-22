@@ -2147,8 +2147,7 @@ dependencies = [
 [[package]]
 name = "sfv"
 version = "0.14.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d471eaefb14f4b30032525bdb124b36e55ba9cb1292080e06f1a236cd10fe87"
+source = "git+https://github.com/undef1nd/sfv.git?branch=main#75819de3aacfdf535e710b9b205ac827d59a8e53"
 dependencies = [
  "base64 0.22.1",
  "indexmap 2.12.1",
