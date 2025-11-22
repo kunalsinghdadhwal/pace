@@ -9,6 +9,7 @@ pingora-core = { git = "https://github.com/cloudflare/pingora.git", branch = "ma
 pingora-proxy = { git = "https://github.com/cloudflare/pingora.git", branch = "main" }
 pingora-load-balancing = { git = "https://github.com/cloudflare/pingora.git", branch = "main" }
 pingora-http = { git = "https://github.com/cloudflare/pingora.git", branch = "main" }
+pingora-limits = { git = "https://github.com/cloudflare/pingora.git", branch = "main" }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
 toml = "0.8"

@@ -5,12 +5,12 @@ use pingora_core::prelude::*;
 use pingora_core::server::configuration::Opt;
 use pingora_core::upstreams::peer::HttpPeer;
 use pingora_http::{RequestHeader, ResponseHeader};
+use pingora_limits::rate::Rate;
 use pingora_proxy::{FailToProxy, ProxyHttp, Session};
 use prometheus::{Encoder, HistogramOpts, HistogramVec, Registry, TextEncoder};
-use std::collections::HashMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::{Arc, RwLock};
-use std::time::{Instant, SystemTime, UNIX_EPOCH};
+use std::sync::Arc;
+use std::time::{Duration, Instant};
 
 mod config;
 use config::{load_config, Config};
@@ -33,43 +33,7 @@ static REQUEST_DURATION: Lazy<HistogramVec> = Lazy::new(|| {
     histogram
 });
 
-#[derive(Clone)]
-struct RateLimiter {
-    requests: Arc<RwLock<HashMap<String, Vec<u64>>>>,
-    max_requests: u64,
-    window_seconds: u64,
-}
-
-impl RateLimiter {
-    fn new(max_requests: u64, window_seconds: u64) -> Self {
-        Self {
-            requests: Arc::new(RwLock::new(HashMap::new())),
-            max_requests,
-            window_seconds,
-        }
-    }
-
-    fn check_rate_limit(&self, client_ip: &str) -> bool {
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_secs();
-
-        let mut requests = self.requests.write().unwrap();
-        let entry = requests
-            .entry(client_ip.to_string())
-            .or_insert_with(Vec::new);
-
-        entry.retain(|&timestamp| now - timestamp < self.window_seconds);
-
-        if entry.len() >= self.max_requests as usize {
-            false
-        } else {
-            entry.push(now);
-            true
-        }
-    }
-}
+static RATE_LIMITER: Lazy<Rate> = Lazy::new(|| Rate::new(Duration::from_secs(60)));
 
 pub struct ProxyContext {
     backend_index: usize,
@@ -92,21 +56,14 @@ impl ProxyContext {
 pub struct ReverseProxy {
     backends: Vec<String>,
     round_robin_index: Arc<AtomicUsize>,
-    rate_limiter: RateLimiter,
     config: Config,
 }
 
 impl ReverseProxy {
     fn new(config: Config) -> Self {
-        let rate_limiter = RateLimiter::new(
-            config.rate_limit.max_requests,
-            config.rate_limit.window_seconds,
-        );
-
         Self {
             backends: config.upstreams.backends.clone(),
             round_robin_index: Arc::new(AtomicUsize::new(0)),
-            rate_limiter,
             config,
         }
     }
@@ -119,6 +76,19 @@ impl ReverseProxy {
 
     fn get_backend_by_index(&self, index: usize) -> String {
         self.backends[index % self.backends.len()].clone()
+    }
+
+    fn get_client_ip(&self, session: &Session) -> String {
+        session
+            .client_addr()
+            .map(|addr| {
+                let addr_str = addr.to_string();
+                addr_str
+                    .rsplit_once(':')
+                    .map(|(ip, _port)| ip.to_string())
+                    .unwrap_or(addr_str)
+            })
+            .unwrap_or_else(|| "unknown".to_string())
     }
 }
 
@@ -161,13 +131,22 @@ impl ProxyHttp for ReverseProxy {
             return Ok(true);
         }
 
-        let client_ip = session
-            .client_addr()
-            .map(|addr| addr.to_string())
-            .unwrap_or_else(|| "unknown".to_string());
+        let client_ip = self.get_client_ip(session);
+        info!("Request from client IP: {}", client_ip);
 
-        if !self.rate_limiter.check_rate_limit(&client_ip) {
-            warn!("Rate limit exceeded for client: {}", client_ip);
+        let curr_window_requests = RATE_LIMITER.observe(&client_ip, 1);
+        let max_requests = self.config.rate_limit.max_requests as isize;
+
+        info!(
+            "Rate limit check for {}: {} requests in window (limit: {})",
+            client_ip, curr_window_requests, max_requests
+        );
+
+        if curr_window_requests > max_requests {
+            warn!(
+                "Rate limit exceeded for client: {} ({} > {})",
+                client_ip, curr_window_requests, max_requests
+            );
 
             let body = "Too Many Requests";
             let mut header = ResponseHeader::build(429, None).unwrap();
@@ -175,7 +154,18 @@ impl ProxyHttp for ReverseProxy {
             header
                 .insert_header("Content-Length", &body.len().to_string())
                 .unwrap();
+            header
+                .insert_header("X-Rate-Limit-Limit", &max_requests.to_string())
+                .unwrap();
+            header.insert_header("X-Rate-Limit-Remaining", "0").unwrap();
+            header
+                .insert_header(
+                    "X-Rate-Limit-Reset",
+                    &self.config.rate_limit.window_seconds.to_string(),
+                )
+                .unwrap();
 
+            session.set_keepalive(None);
             session
                 .write_response_header(Box::new(header), false)
                 .await?;
@@ -188,7 +178,7 @@ impl ProxyHttp for ReverseProxy {
 
         session
             .req_header_mut()
-            .insert_header("X-Proxy", "Pingora-Response")
+            .insert_header("X-Proxy", "Pingora-POW")
             .unwrap();
 
         Ok(false)

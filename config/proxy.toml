@@ -6,7 +6,7 @@ workers = 4
 backends = ["http://127.0.0.1:8000", "http://127.0.0.1:8001"]
 
 [rate_limit]
-max_requests = 100
+max_requests = 10
 window_seconds = 60
 key_extractor = "client_ip"
 

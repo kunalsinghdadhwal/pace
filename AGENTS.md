@@ -31,46 +31,36 @@ This project builds a configurable HTTP reverse proxy (API gateway) using Cloudf
 - `README.md`: Setup (prereqs, build/run), tests (curl/ab examples), systemd unit.
 - Optional: `tests/integration.rs` for basic proxy checks.
 
-## Reference Links
-### Core Pingora Docs (GitHub: https://github.com/cloudflare/pingora/tree/main/docs)
-- Quick Start: https://github.com/cloudflare/pingora/blob/main/docs/quick_start.md
-- User Guide Index: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/index.md
-- Start/Stop: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/start_stop.md
-- Graceful Restart/Shutdown: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/graceful.md
-- Configuration: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/conf.md
-- Daemonization: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/daemon.md
-- Systemd Integration: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/systemd.md
-- Panic Handling: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/panic.md
-- Error Logging: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/error_log.md
-- Prometheus Metrics: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/prom.md
+### Core Pingora Docs
+- Quick Start: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/quick_start.md
+- User Guide Index: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/index.md
+- Start/Stop: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/start_stop.md
+- Graceful Restart/Shutdown: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/graceful.md
+- Configuration: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/conf.md
+- Daemonization: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/daemon.md
+- Systemd Integration: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/systemd.md
+- Panic Handling: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/panic.md
+- Error Logging: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/error_log.md
+- Prometheus Metrics: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/prom.md
 
 ### Building Proxies
-- Request Lifecycle/Phases: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/phase.md
-- Upstream Peers: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/peer.md
-- CTX State Sharing: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/ctx.md
-- Returning Errors: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/errors.md
-- Modify Requests: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/modify_filter.md
-- Connection Pooling: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/pooling.md
-- Failover/Handling Failures: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/failover.md
-- Rate Limiter Quickstart: https://github.com/cloudflare/pingora/blob/main/docs/user_guide/rate_limiter.md
+- Request Lifecycle/Phases: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/phase.md
+- Upstream Peers: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/peer.md
+- CTX State Sharing: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/ctx.md
+- Returning Errors: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/errors.md
+- Modify Requests: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/modify_filter.md
+- Connection Pooling: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/pooling.md
+- Failover/Handling Failures: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/failover.md
+- Rate Limiter Quickstart: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/user_guide/rate_limiter.md
 
 ### Advanced (Optional)
-- Internals: https://github.com/cloudflare/pingora/blob/main/docs/advanced/internals.md
-- BoringSSL Usage: (WIP in docs; see repo examples)
-- Async Runtime/Threading: (WIP; use Tokio for extensions)
+- Internals: https://raw.githubusercontent.com/cloudflare/pingora/refs/heads/main/docs/advanced/internals.md
 
-### External References
+### External References (Unchanged)
 - Pingora Crate Docs: https://docs.rs/pingora/latest/pingora/
 - Pingora Proxy Module: https://docs.rs/pingora-proxy/latest/pingora_proxy/
 - Prometheus Rust Client: https://docs.rs/prometheus/latest/prometheus/
-- Rust Async Best Practices: https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html
-- TOML Parsing with Serde: https://serde.rs/tomls.html
-- Testing Tools: Apache Bench (`ab`): https://httpd.apache.org/docs/2.4/programs/ab.html
-
-## Troubleshooting
-- API Changes: Check https://github.com/cloudflare/pingora/releases (post-0.6 updates).
-- Build Errors: Ensure `rustup update`; add `lazy_static = "1.4"` if needed for metrics.
-- Runtime Panics: Hook via `panic.md` example.
-- Extensions: Add TLS (BoringSSL), health checks (background service), or tracing after core.
-
-Implement step-by-step; validate each phase with tests. Share repo for feedback!
+- Rust Async Book: https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html
+- TOML + Serde: https://serde.rs/tomls.html
+- Apache Bench (ab): https://httpd.apache.org/docs/2.4/programs/ab.html
+- Pingora Releases: https://github.com/cloudflare/pingora/releases

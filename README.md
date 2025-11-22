@@ -5,7 +5,7 @@ A high-performance HTTP reverse proxy built with Cloudflare's Pingora framework 
 ## Features
 
 - **Round-Robin Load Balancing** - Distributes traffic evenly across backends
-- **Per-IP Rate Limiting** - 100 req/60s per client (configurable)
+- **Per-IP Rate Limiting** - 10 req/60s per client (configurable)
 - **Automatic Failover** - Retries on different backends when one fails
 - **Prometheus Metrics** - Request latency histograms at `/metrics`
 - **Header Injection** - Adds X-Proxy and X-Backend headers
@@ -40,7 +40,7 @@ workers = 4
 backends = ["http://127.0.0.1:8000", "http://127.0.0.1:8001"]
 
 [rate_limit]
-max_requests = 100
+max_requests = 10
 window_seconds = 60
 key_extractor = "client_ip"
 
@@ -72,8 +72,8 @@ for i in {1..6}; do
   curl -s http://localhost:8080/ | grep backend
 done
 
-# Test rate limiting (sends 105 requests)
-for i in {1..105}; do
+# Test rate limiting (sends 15 requests)
+for i in {1..15}; do
   curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/
 done
 
@@ -255,42 +255,6 @@ Expected on modern hardware:
 - **Latency p50**: < 10ms
 - **Latency p99**: < 50ms
 - **Memory**: < 50MB under load
-
-## Dependencies
-
-- **pingora 0.6** - Core proxy framework (git main)
-- **tokio 1.x** - Async runtime
-- **prometheus 0.13** - Metrics
-- **serde 1.x** - Configuration parsing
-- **toml 0.8** - Config format
-- **env_logger 0.11** - Logging
-
-## Project Structure
-
-```
-pace/
-├── config/proxy.toml       # Configuration
-├── src/
-│   ├── main.rs             # Proxy implementation
-│   └── config.rs           # Config parser
-├── scripts/
-│   ├── start_all.sh        # Start all services
-│   ├── test_proxy.sh       # Test suite
-│   ├── backend1.py         # Test backend 1
-│   └── backend2.py         # Test backend 2
-└── target/release/pace     # Binary
-```
-
-## Contributing
-
-1. Fork repository
-2. Create feature branch
-3. Add tests
-4. Submit pull request
-
-## License
-
-See LICENSE file.
 
 ## Acknowledgments
 
