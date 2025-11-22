@@ -86,10 +86,13 @@ ab -n 10000 -c 50 http://localhost:8080/
 
 ## Architecture
 
-```
-Client → [Proxy:8080] → Rate Limiter → Round-Robin LB → Backends
-                                                          ├─ Backend1:8000
-                                                          └─ Backend2:8001
+```mermaid
+flowchart LR
+    C[Client] --> P[Proxy:8080]
+    P --> R[Rate Limiter]
+    R --> LB[Round Robin LB]
+    LB --> B1[Backend1:8000]
+    LB --> B2[Backend2:8001]
 ```
 
 ### Request Flow
