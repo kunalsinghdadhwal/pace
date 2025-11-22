@@ -4,11 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-pingora = "0.3"
-pingora-core = "0.3"
-pingora-proxy = "0.3"
-pingora-load-balancing = "0.3"
-pingora-http = "0.3"
+pingora = { git = "https://github.com/cloudflare/pingora.git", branch = "main" }
+pingora-core = { git = "https://github.com/cloudflare/pingora.git", branch = "main" }
+pingora-proxy = { git = "https://github.com/cloudflare/pingora.git", branch = "main" }
+pingora-load-balancing = { git = "https://github.com/cloudflare/pingora.git", branch = "main" }
+pingora-http = { git = "https://github.com/cloudflare/pingora.git", branch = "main" }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
 toml = "0.8"
@@ -18,9 +18,6 @@ prometheus = "0.13"
 async-trait = "0.1"
 once_cell = "1.19"
 http = "1.0"
-
-[patch.crates-io]
-sfv = { version = "=0.9.4" }
 
 [profile.release]
 opt-level = 3
